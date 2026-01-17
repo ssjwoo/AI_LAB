@@ -145,3 +145,33 @@ JSON 구조화 로깅(예: structlog) 적용
 pytest로 권한/파싱/서킷브레이커 동작 테스트 자동화
 
 스케일 환경에서 breaker/limit 상태 공유를 위한 Redis 도입
+
+
+=========== 간단 정리
+
+
+1. 회복 탄력성 (Resilience) 패턴:
+
+Circuit Breaker (breaker.py): 외부 API(AI 등)가 장애 상태일 때, 계속 요청을 보내 자원을 낭비하지 않고 빠르게 실패(Fast Fail) 처리하거나 대체 로직을 수행하는 메커니즘.
+
+Retry & Fallback (service.py): 일시적인 오류는 재시도하고, 영구적인 오류는 기본(Basic) 모델로 전환하여 서비스 연속성을 보장하는 전략.
+
+2. 비동기 프로그래밍 (Async/Await):
+
+Concurrency Control (async_demo.py): asyncio.Semaphore를 사용하여 동시에 실행되는 작업 수(Concurrency)를 제어, 시스템 과부하를 방지하는 방법.
+
+Non-blocking I/O: 디스크 쓰기(aiofiles)나 네트워크 대기 중 CPU를 차단하지 않는 방식.
+
+3. 구조적 데이터 검증 (Structured Generation):
+
+Pydantic & JSON Repair (report.py): LLM은 거짓말(Hallucination)이나 포맷 오류를 낼 수 있습니다. 이를 Pydantic 모델로 검증하고, 실패 시 "포맷을 고쳐달라"고 다시 요청하는 Self-Correction 워크플로우.
+
+4. 보안 및 권한 관리 (RBAC):
+
+Access Control (authz.py): 사용자(User)와 리소스(Resource)의 소유권을 비교하여 접근을 제어.
+
+Security by Obscurity: 권한이 없을 때 '403 Forbidden'을 줄지, 해커에게 리소스 존재 자체를 숨기기 위해 '404 Not Found'를 줄지 결정하는 보안 전략.
+
+5. 추상화 및 의존성 주입 (Abstraction):
+
+Strategy Pattern (sinks.py): 개발 환경(Local)과 운영 환경(SMTP)에 따라 코드를 수정하지 않고 설정(Settings)만으로 동작 방식을 교체하는 기법.
